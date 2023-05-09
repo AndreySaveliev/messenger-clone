@@ -4,8 +4,8 @@ import Button from '@/app/components/Button';
 import Input from '@/app/components/inputs/Input';
 import { useCallback, useState } from 'react';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
-
 type Varient = 'LOGIN' | 'REGISTER';
+
 
 const AuthForm = () => {
   const [varient, setVarient] = useState<Varient>('LOGIN');
@@ -45,6 +45,7 @@ const AuthForm = () => {
 
   return (
     <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 className="mb-6 text-center text-3xl font-bold tracking-tighter text-gray-900">{varient === "LOGIN" ? "Sign in" : "Register"}</h2>
       <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           {varient === 'REGISTER' && (
