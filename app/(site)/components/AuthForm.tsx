@@ -2,10 +2,12 @@
 
 import Button from '@/app/components/Button';
 import Input from '@/app/components/inputs/Input';
+import axios from 'axios';
 import { useCallback, useState } from 'react';
 import { useForm, FieldValues, SubmitHandler } from 'react-hook-form';
+import { toast } from 'react-hot-toast';
+import { signIn } from 'next-auth/react';
 type Varient = 'LOGIN' | 'REGISTER';
-
 
 const AuthForm = () => {
   const [varient, setVarient] = useState<Varient>('LOGIN');
@@ -35,17 +37,35 @@ const AuthForm = () => {
     setIsLoading(true);
 
     if (varient === 'REGISTER') {
-      // register end point
+      axios
+        .post('/api/register', data)
+        .catch(() => toast.error('Something went wrong'))
+        .finally(() => setIsLoading(false));
     }
 
     if (varient === 'LOGIN') {
-      // nexthauth
+      signIn('credentials', {
+        ...data,
+        redirect: false
+      }).then((callBack) => {
+        if (callBack?.error) {
+          toast.error('Invalid credentials')
+        }
+
+        if (callBack?.ok && !callBack?.error) {
+          toast.success('Success')
+        }
+      }).finally(() => {
+        setIsLoading(false)
+      })
     }
   };
 
   return (
     <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mb-6 text-center text-3xl font-bold tracking-tighter text-gray-900">{varient === "LOGIN" ? "Sign in" : "Register"}</h2>
+      <h2 className="mb-6 text-center text-3xl font-bold tracking-tighter text-gray-900">
+        {varient === 'LOGIN' ? 'Sign in' : 'Register'}
+      </h2>
       <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           {varient === 'REGISTER' && (
@@ -75,9 +95,11 @@ const AuthForm = () => {
             </div>
           </div>
         </div> */}
-        <div className='flex gap-2 justify-center text-sm mt-6 px-2 text-gray-500'>
-          <div>{varient === "LOGIN" ? "New to messenger?" : "Alredy have an account?"}</div>
-          <div onClick={toggleVarient} className='underline cursor-pointer'>{varient === "LOGIN" ? 'Create an account' : "Login"}</div>
+        <div className="flex gap-2 justify-center text-sm mt-6 px-2 text-gray-500">
+          <div>{varient === 'LOGIN' ? 'New to messenger?' : 'Alredy have an account?'}</div>
+          <div onClick={toggleVarient} className="underline cursor-pointer">
+            {varient === 'LOGIN' ? 'Create an account' : 'Login'}
+          </div>
         </div>
       </div>
     </div>
