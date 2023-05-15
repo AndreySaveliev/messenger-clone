@@ -18,16 +18,16 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({ data, selected }) => 
   const otherUser = useOtherUser(data);
   const session = useSession();
   const router = useRouter();
-
+  console.log(data)
   const handleClick = useCallback(() => {
     router.push(`/conversations/${data.id}`);
   }, [data.id, router]);
 
   const lastMessage = useMemo(() => {
-    const messages = data.messages || [];
+    const messages = data.message || [];
 
     return messages[messages.length - 1];
-  }, [data.messages]);
+  }, [data.message]);
 
   const userEmail = useMemo(() => {
     return session.data?.user?.email;
