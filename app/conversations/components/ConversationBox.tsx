@@ -18,7 +18,6 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({ data, selected }) => 
   const otherUser = useOtherUser(data);
   const session = useSession();
   const router = useRouter();
-  console.log(data)
   const handleClick = useCallback(() => {
     router.push(`/conversations/${data.id}`);
   }, [data.id, router]);
