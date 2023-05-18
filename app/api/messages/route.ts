@@ -1,15 +1,15 @@
 import getCurrentUser from "@/app/actions/getCurrentUser"
 import { NextResponse } from "next/server"
-
+import { pusherServer } from "@/app/libs/pusher"
 import prisma from '@/app/libs/prismadb'
 
 export async function POST(req: Request) {
   try {
     const currentUser = await getCurrentUser()
     const body = await req.json()
-    const {message, image, conversationId} = body
+    const { message, image, conversationId } = body
 
-    if (!currentUser?.id || !currentUser?.email) return new NextResponse("UNAITHORIZED", {status: 401}) 
+    if (!currentUser?.id || !currentUser?.email) return new NextResponse("UNAITHORIZED", { status: 401 })
 
     const newMessage = await prisma.message.create({
       data: {
@@ -60,10 +60,21 @@ export async function POST(req: Request) {
       }
     })
 
+    await pusherServer.trigger(conversationId, 'messages:new', newMessage);
+
+    const lastMessage = updatedConversation.message[updatedConversation.message.length - 1];
+
+    updatedConversation.users.map((user) => {
+      pusherServer.trigger(user.email!, 'conversation:update', {
+        id: conversationId,
+        message: [lastMessage]
+      });
+    });
+
     return NextResponse.json(newMessage)
 
   } catch (err: any) {
     console.log(err)
-    return new NextResponse('INERNAL ERROR', {status: 500})
+    return new NextResponse('INERNAL ERROR', { status: 500 })
   }
 }
