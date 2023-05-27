@@ -1,6 +1,7 @@
 'use client';
 
 import Avatar from '@/app/components/Avatar';
+import useActiveList from '@/app/hooks/useActiveList';
 import useOtherUser from '@/app/hooks/useOtherUser';
 import { Transition, Dialog } from '@headlessui/react';
 import { Conversation, User } from '@prisma/client';
@@ -17,7 +18,8 @@ interface ProfileDraweProps {
 
 const ProfileDrawe: React.FC<ProfileDraweProps> = ({ isOpen, onClose, data }) => {
   const otherUser = useOtherUser(data);
-
+  const { members } = useActiveList();
+  const isActive = members.indexOf(otherUser?.email ) !== -1;
   const joinedDate = useMemo(() => {
     return format(new Date(otherUser.createdAt), 'PP');
   }, [otherUser.createdAt]);
@@ -30,8 +32,8 @@ const ProfileDrawe: React.FC<ProfileDraweProps> = ({ isOpen, onClose, data }) =>
     if (data.isGroup) {
       return `${data.users.length} members`;
     }
-    return 'Active';
-  }, [data]);
+    return isActive ? "Active" : "Offline";
+  }, [data, isActive]);
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
