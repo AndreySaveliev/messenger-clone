@@ -11,4 +11,4 @@
  - Tailwind
 ## Деплой на Vercel
 
-https://vercel.com/andreysavelievs-projects/messenger-clone/EDh4HDzCbW1Sfyr4zhQsV7KLRTvN
+https://messenger-clone-r7kl50y6r-andreysaveliev.vercel.app/
